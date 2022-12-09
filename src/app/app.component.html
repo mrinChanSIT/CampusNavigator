@@ -1,9 +1,12 @@
+<script src="tota11y.min.js"></script>
 <div #mapContainer id="map"></div>
 <!-- <iframe src="https://storage.googleapis.com/maps-solutions-dpxb661i5g/locator-plus/10vi/locator-plus.html"
   width="100%" height="700px"
   style="border:0;"
   loading="lazy">
 </iframe> -->
+<body>
+<div>Buildings</div>
 <a (click)="setMarkerCoOrds($event.target.innerText)">Howe Center</a>
 <br>
 <a (click)="setMarkerCoOrds($event.target.innerText)">Library</a>
@@ -17,3 +20,10 @@
 <a>Babbio Center</a>
 <br>
 <a>Burchard Hall</a>
+</body>
+<style>
+  div {
+    font-weight: bold;
+    font-size: larger;
+  }
+</style>
