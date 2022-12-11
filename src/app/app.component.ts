@@ -52,12 +52,6 @@ export class AppComponent implements AfterViewInit, OnInit {
       map: this.map 
     },
     {
-      name: "Police Station",
-      lat: 40.74352454914575, 
-      lng: -74.02639713189986,
-      map: this.map 
-    },
-    {
       name: "UCC Center",
        
       lat: 40.74384925513569,
@@ -234,7 +228,7 @@ export class AppComponent implements AfterViewInit, OnInit {
     this.startNavigator = true;
     let origin = {
       lat : this.lat,
-      lng: this.lng
+      lng: this.lng,
     }
     let req = {
       origin : origin,
