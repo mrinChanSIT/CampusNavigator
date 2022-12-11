@@ -1,19 +1,20 @@
+<div class="navigator-class">
+  <mat-form-field id="selectedDestination" appearance="fill">
+    <mat-label >Select your Destination</mat-label>
+    <mat-select required>
+      <mat-option   *ngFor="let marker of markers" [value]="marker" (click)="setMarkerCoOrds($event.target.innerText)">
+        {{ marker.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="markerControl.hasError('required')"
+      >Please choose a destination</mat-error
+    >
+    <mat-hint>{{ markerControl.value?.name }}</mat-hint>
+  </mat-form-field>
+  <button type="button" class="btn btn-success" *ngIf="startNavigator" (click)="watchPos()">
+    Start Navigation
+  </button>
+</div>
+
+
 <div #mapContainer id="map"></div>
-<!-- <iframe src="https://storage.googleapis.com/maps-solutions-dpxb661i5g/locator-plus/10vi/locator-plus.html"
-  width="100%" height="700px"
-  style="border:0;"
-  loading="lazy">
-</iframe> -->
-<a (click)="setMarkerCoOrds($event.target.innerText)">Howe Center</a>
-<br>
-<a (click)="setMarkerCoOrds($event.target.innerText)">Library</a>
-<br>
-<a>UCC Center</a>
-<br>
-<a>Walker Gym</a>
-<br>
-<a>Kiddie hall</a>
-<br>
-<a>Babbio Center</a>
-<br>
-<a>Burchard Hall</a>

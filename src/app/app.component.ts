@@ -1,6 +1,5 @@
 import { Component, AfterViewInit, OnInit, ViewChild, ElementRef } from "@angular/core";
-// import { stat } from "fs";
-
+import { FormControl, Validators } from "@angular/forms";
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
@@ -11,7 +10,12 @@ export class AppComponent implements AfterViewInit, OnInit {
   map: google.maps.Map;
   lat = 40.7427;
   lng = -74.0268;
+  mockPathData = {
 
+  }
+  startNavigator : boolean = false;
+  markerControl = new FormControl(null, Validators.required);
+  selectFormControl = new FormControl('', Validators.required);
   markers = [
     {
       name: "Howe Center",
@@ -29,9 +33,35 @@ export class AppComponent implements AfterViewInit, OnInit {
       title: "Marker 1"
     },
     {
+      name: "Castle Point",
+      lat: 40.74451952688292, 
+      lng: -74.02381387161087,
+      map: this.map 
+    },
+    {
+      name: "Wellness Center",
+       
+      lat: 40.74631850841689, 
+      lng: -74.02490677910247,
+      map: this.map 
+    },
+    {
+      name: "Police Station",
+      lat: 40.74352454914575, 
+      lng: -74.02639713189986,
+      map: this.map 
+    },
+    {
+      name: "Police Station",
+      lat: 40.74352454914575, 
+      lng: -74.02639713189986,
+      map: this.map 
+    },
+    {
       name: "UCC Center",
-      lat: 40.7452,
-      lng: -74.0239,
+       
+      lat: 40.74384925513569,
+      lng: -74.02510202827337,
       map: this.map,
       title: "Marker 1"
     },
@@ -44,8 +74,9 @@ export class AppComponent implements AfterViewInit, OnInit {
     },
     {
       name: "Kiddie hall",
-      lat: 40.7452,
-      lng: -74.0239,
+       
+      lat: 40.743655760461884,
+      lng: -74.026230906516,
       map: this.map,
       title: "Marker 1"
     },
@@ -58,29 +89,39 @@ export class AppComponent implements AfterViewInit, OnInit {
     },
     {
       name: "Burchard Hall",
-      lat: 40.7452,
-      lng: -74.0239,
+       
+      lat: 40.742885028160806,
+      lng: -74.02734476169775,
       map: this.map,
       title: "Marker 1"
     },
     {
       name: "Carnigae Hall",
-      lat: 40.7452,
-      lng: -74.0239,
+       
+      lat: 40.74287201994968,
+      lng: -74.02786413154871,
+      map: this.map,
+      title: "Marker 1"
+    },
+    {
+      name: "Book Store",
+       
+      lat: 40.74477932256344,
+      lng: -74.02360830338696,
       map: this.map,
       title: "Marker 1"
     },
     {
       name: "Gateway South",
-      lat: 40.7452,
-      lng: -74.0239,
+      lat: 40.743195598583235,
+      lng:  -74.02765166205056,
       map: this.map,
       title: "Marker 1"
     },
     {
       name: "Gateway North",
-      lat: 40.7452,
-      lng: -74.0239,
+      lat: 40.74346226521448,
+      lng:  -74.02754864655151,
       map: this.map,
       title: "Marker 1"
     }
@@ -97,9 +138,6 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   //Default Marker
   marker = new google.maps.Marker({
-    position: this.coordinates,
-    map: this.map,
-    title: "Hello World!"
   });
 
   ds : google.maps.DirectionsService;
@@ -113,32 +151,41 @@ export class AppComponent implements AfterViewInit, OnInit {
       map : null
     })
 
-    console.log('inside oniniit')
-    if(navigator.geolocation){
-      console.log('locl  supported')
-    }
     navigator.geolocation.getCurrentPosition((position)=>{
-      console.log(`lat: ${position.coords.latitude}, lng: ${position.coords.longitude}`);
+      this.lat = position.coords.latitude
+      this.lng = position.coords.longitude;
     });
+    
   }
 
   watchPos (){
-    let destLat = 0;
-    let destlong = 0;
+    let destLat;
+    let destlong;
+    let selectedDestination = document.getElementById('selectedDestination').innerText;
+    selectedDestination = selectedDestination.split('\t')[0];
+    this.markers.forEach((dest)=>{
+      if (dest.name === selectedDestination){
+        destLat = dest.lat;
+        destlong = dest.lng;
+      }
+    })
+    
     let id = navigator.geolocation.watchPosition((position)=>{
-    console.log(`lat: ${position.coords.latitude}, lng: ${position.coords.longitude}`);
     if(destLat === position.coords.latitude){
       navigator.geolocation.clearWatch(id);
       alert('location reached');
     }
 
-    }, (err)=>{
-      console.log(err)
-    }, {
+    this.lat = position.coords.latitude
+    this.lng = position.coords.longitude
+    this.setMarkerCoOrds(selectedDestination)
+    , {
       enableHighAccuracy: true,
       timeout: 5000,
       maximumAge: 0
-    })
+    }})
+    
+    
   }
 
   ngAfterViewInit(): void {
@@ -159,16 +206,12 @@ export class AppComponent implements AfterViewInit, OnInit {
     //Adding default marker to map
     this.marker.setMap(this.map);
 
-    //Adding other markers
-    // this.loadAllMarkers();
   }
 
   
   setMarkerCoOrds(coordsName){
-    console.log(coordsName);
     this.markers.forEach((marker)=>{
       if (coordsName === marker.name){
-        console.log('marked here', marker.name)
         this.putMarker(marker.lat, marker.lng);
       }
     })
@@ -183,14 +226,12 @@ export class AppComponent implements AfterViewInit, OnInit {
     }
     this.coordinates = new google.maps.LatLng(lat, lng);
     this.marker = new google.maps.Marker({
-      position: this.coordinates,
-      map: this.map,
-      title: "Hello World!"
     });
     this.setRouteLine(dest);
   }
-
   setRouteLine(dest){
+
+    this.startNavigator = true;
     let origin = {
       lat : this.lat,
       lng: this.lng
@@ -198,7 +239,7 @@ export class AppComponent implements AfterViewInit, OnInit {
     let req = {
       origin : origin,
       destination: dest,
-      travelMode : google.maps.TravelMode.TRANSIT
+      travelMode : google.maps.TravelMode.WALKING
 
     }
 
@@ -208,12 +249,27 @@ export class AppComponent implements AfterViewInit, OnInit {
         map: this.map
       });
       if(status === google.maps.DirectionsStatus.OK){
+        this.mockPathData = response.routes[0].overview_path.map((path)=>{
+          return {lat: path.lat(), lng: path.lng()}
+      })
         this.dr.setDirections(response);
       }
+      console.log(this.mockPathData)
     });
 
+
+    
     
   }
-  
+  isMenuOpened: boolean = false;
+
+  toggleMenu(): void {
+    this.isMenuOpened = !this.isMenuOpened;
+  }
+
+  clickedOutside(): void {
+    this.isMenuOpened = false;
+  }
+
   
 }
